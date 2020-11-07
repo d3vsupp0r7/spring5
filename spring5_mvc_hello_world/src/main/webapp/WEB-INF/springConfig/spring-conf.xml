@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<!-- MVC -->
+	<mvc:annotation-driven />
+	<mvc:default-servlet-handler />
+	<mvc:resources mapping="/resources/css/**" location="/css/" />
+	<mvc:resources mapping="/resources/img/**" location="/img/" />
+	<mvc:resources mapping="/resources/js/**" location="/js/" /> 
+ 	<!--  -->
+ 	<util:properties id="viewPropertyConfigurer" location="classpath:application.properties"/> 
+ 	
+ 	<!-- Message resources -->
+ 	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+        <property name="basename" value="messages" />
+    </bean>
+		
+	<context:property-placeholder
+		location="classpath:application.properties,
+	 	classpath:dbConnection-#{environment.getActiveProfiles()[0]}-sql.properties,
+        classpath:springBeans.properties"
+		ignore-unresolvable="false" />
+    
+    <!-- Component scan -->
+	<context:component-scan
+		base-package="org.lba.spring5" />
+
+    <bean id="templateResolver" class="org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver">
+        <property name="prefix" value="/WEB-INF/pages/"/>
+         <property name="suffix" value=".html"/>
+    </bean>
+
+    <bean id="templateEngine" class="org.thymeleaf.spring5.SpringTemplateEngine">
+        <property name="templateResolver" ref="templateResolver"/>
+    </bean>
+
+    <bean class="org.thymeleaf.spring5.view.ThymeleafViewResolver">
+        <property name="templateEngine" ref="templateEngine"/>
+        <property name="viewNames" value="*.html"/>
+        <property name="order" value="0"/>
+    </bean>
+    
+    <!-- JSP viewResolver -->
+    <bean id="jspViewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/pages/employees" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+	
+	<!-- File Upload -->
+	<bean id="multipartResolver"   
+    class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>  
+    
+    <bean id="multipartResolverMultipleFile" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+    	<property name="maxUploadSize" value="20848820" />
+	</bean>
+	
+	
+</beans>
